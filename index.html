@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Catálogo | Regalos & Ramos</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --rosa:#ff9ecb;
+  --rosa2:#ffd1e6;
+  --blanco:#fff;
+  --negro:#222;
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:'Poppins',sans-serif;
+  background:linear-gradient(-45deg,#ffe3ef,#ffffff,#ffd1e6);
+  background-size:400% 400%;
+  animation:bg 16s ease infinite;
+  color:#333;
+}
+
+@keyframes bg{
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+}
+
+/* PARTICULAS */
+#tsparticles{
+  position:fixed;
+  inset:0;
+  z-index:-1;
+}
+
+/* HEADER */
+header{
+  position:sticky;
+  top:0;
+  background:rgba(255,255,255,.85);
+  backdrop-filter:blur(8px);
+  padding:14px;
+  text-align:center;
+  z-index:5;
+}
+
+header h1{
+  font-family:'Pacifico',cursive;
+  color:#ff6fae;
+  margin:0;
+  font-size:30px;
+}
+
+/* FEED */
+.feed{
+  max-width:430px;
+  margin:auto;
+  padding-bottom:40px;
+}
+
+/* POST */
+.post{
+  background:#fff;
+  margin:18px 12px;
+  border-radius:18px;
+  overflow:hidden;
+  box-shadow:0 10px 30px rgba(0,0,0,.12);
+  cursor:pointer;
+  animation:postIn .6s ease forwards;
+}
+
+@keyframes postIn{
+  from{opacity:0;transform:translateY(30px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+.post img{
+  width:100%;
+  height:360px;
+  object-fit:cover;
+}
+
+/* OVERLAY */
+.overlay{
+  position:absolute;
+  inset:0;
+  background:linear-gradient(transparent 55%,rgba(0,0,0,.6));
+  display:flex;
+  align-items:flex-end;
+  padding:14px;
+}
+
+.overlay div{
+  color:#fff;
+}
+
+.overlay h3{
+  margin:0;
+  font-size:18px;
+}
+
+.overlay span{
+  font-weight:600;
+  color:#ffb7d8;
+}
+
+/* POST INFO */
+.info{
+  padding:14px;
+  font-size:14px;
+}
+
+.info strong{color:#ff6fae}
+
+/* MODAL */
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.65);
+  display:none;
+  justify-content:center;
+  align-items:flex-end;
+  z-index:10;
+}
+
+.modal-content{
+  background:#fff;
+  width:100%;
+  max-width:430px;
+  border-radius:25px 25px 0 0;
+  padding:18px;
+  animation:slideUp .4s ease;
+}
+
+@keyframes slideUp{
+  from{transform:translateY(100%)}
+  to{transform:translateY(0)}
+}
+
+.cerrar{
+  text-align:center;
+  font-size:26px;
+  cursor:pointer;
+}
+
+/* GALERIA */
+.galeria{
+  position:relative;
+}
+
+.galeria img{
+  width:100%;
+  height:320px;
+  object-fit:contain;
+  border-radius:16px;
+}
+
+.flecha{
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  background:rgba(255,255,255,.9);
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:22px;
+  cursor:pointer;
+}
+
+.izq{left:10px}
+.der{right:10px}
+
+/* DESCRIPCION */
+.descripcion{
+  font-size:14px;
+  margin-top:10px;
+}
+
+.descripcion ul{
+  padding-left:18px;
+}
+
+/* BOTON */
+.btn{
+  display:block;
+  margin-top:14px;
+  padding:14px;
+  border-radius:30px;
+  background:var(--rosa);
+  color:#fff;
+  text-align:center;
+  text-decoration:none;
+  font-weight:600;
+}
+</style>
+</head>
+
+<body>
+
+<div id="tsparticles"></div>
+
+<header>
+  <h1>Catálogo de Regalos</h1>
+</header>
+
+<section class="feed" id="feed"></section>
+
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <div class="cerrar" onclick="cerrar()">⬇️</div>
+    <h3 id="titulo"></h3>
+
+    <div class="galeria">
+      <img id="imgProducto">
+      <div class="flecha izq" onclick="cambiar(-1)">‹</div>
+      <div class="flecha der" onclick="cambiar(1)">›</div>
+    </div>
+
+    <div class="descripcion" id="descripcion"></div>
+    <strong id="precio"></strong>
+
+    <a class="btn" id="whatsapp" target="_blank">Ordenar por WhatsApp</a>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/tsparticles@2/tsparticles.bundle.min.js"></script>
+
+<script>
+tsParticles.load("tsparticles",{
+  particles:{
+    number:{value:45},
+    color:{value:["#ff9ecb","#ffd1e6"]},
+    opacity:{value:.5},
+    size:{value:{min:2,max:4}},
+    move:{enable:true,speed:.6}
+  }
+});
+
+const productos=[
+{
+  nombre:"Ramo Hello Kitty",
+  precio:"$30",
+  desc:`<ul>
+    <li>Peluche + flores</li>
+    <li>Listo para regalar</li>
+    <li>Presentación premium</li>
+  </ul>`,
+  fotos:["IMG-20260217-WA0012.jpg","IMG-20260217-WA0013.jpg"]
+},
+{
+  nombre:"Ramo Amarillo",
+  precio:"$35",
+  desc:`<ul>
+    <li>Colores vibrantes</li>
+    <li>Diseño alegre</li>
+  </ul>`,
+  fotos:["IMG-20260217-WA0013.jpg","IMG-20260217-WA0014.jpg"]
+},
+{
+  nombre:"Ramo Rojo",
+  precio:"$40",
+  desc:`<ul>
+    <li>Romántico</li>
+    <li>Ideal para fechas especiales</li>
+  </ul>`,
+  fotos:["IMG-20260217-WA0014.jpg","IMG-20260217-WA0012.jpg"]
+}
+];
+
+let actual=0,index=0;
+
+const feed=document.getElementById("feed");
+
+productos.forEach((p,i)=>{
+  feed.innerHTML+=`
+  <div class="post" onclick="abrir(${i})">
+    <div style="position:relative">
+      <img src="${p.fotos[0]}">
+      <div class="overlay">
+        <div>
+          <h3>${p.nombre}</h3>
+          <span>${p.precio}</span>
+        </div>
+      </div>
+    </div>
+    <div class="info">
+      <strong>${p.nombre}</strong> – Regalo perfecto 💖
+    </div>
+  </div>`;
+});
+
+function abrir(i){
+  actual=i; index=0;
+  modal.style.display="flex";
+  render();
+}
+
+function render(){
+  const p=productos[actual];
+  titulo.innerText=p.nombre;
+  precio.innerText=p.precio;
+  descripcion.innerHTML=p.desc;
+  imgProducto.src=p.fotos[index];
+  whatsapp.href=`https://wa.me/15129473241?text=${encodeURIComponent("Hola, me interesa el "+p.nombre)}`;
+}
+
+function cambiar(d){
+  const p=productos[actual];
+  index=(index+d+p.fotos.length)%p.fotos.length;
+  imgProducto.src=p.fotos[index];
+}
+
+function cerrar(){modal.style.display="none";}
+</script>
+
+</body>
+</html>
